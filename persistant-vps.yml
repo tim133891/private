@@ -1,0 +1,23 @@
+name: Persistent VPS
+on:
+  workflow_dispatch:   # Manual start
+  push:                # Runs on repo updates
+  schedule:
+    - cron: "*/10 * * * *"  # Auto-restarts every 10 min
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y screen tmux neofetch
+          
+      - name: Start VPS in Background
+        run: |
+          screen -dmS vps bash -c 'while true; do echo "VPS Running..."; sleep 3600; done'
+      
+      - name: Prevent Auto-Termination
+        run: |
+          while true; do echo "Still alive at $(date)"; sleep 300; done
