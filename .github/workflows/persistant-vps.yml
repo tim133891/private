@@ -20,7 +20,6 @@ jobs:
           echo "PermitRootLogin yes" | sudo tee -a /etc/ssh/sshd_config
           echo "PasswordAuthentication yes" | sudo tee -a /etc/ssh/sshd_config
           echo "Port 22" | sudo tee -a /etc/ssh/sshd_config
-          sudo systemctl restart ssh
           sudo systemctl enable ssh
 
       - name: Open Firewall for SSH
@@ -29,13 +28,13 @@ jobs:
           sudo ufw --force enable
           sudo ufw reload
 
+      - name: Restart SSH Service (Final Step)
+        run: |
+          sudo systemctl restart ssh
+
       - name: Show Public IP
         run: curl ifconfig.me
 
       - name: Keep VPS Alive
         run: |
           screen -dmS vps bash -c 'while true; do echo "VPS Running..."; sleep 3600; done'
-      
-      - name: Prevent Auto-Termination
-        run: |
-          while true; do echo "Still alive at $(date)"; sleep 300; done
