@@ -12,8 +12,19 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y screen tmux neofetch
+          sudo apt install -y screen tmux neofetch openssh-server
           
+      - name: Start SSH Server
+        run: |
+          sudo systemctl start ssh
+          echo "root:github123" | sudo chpasswd  # Set root password
+          echo "PermitRootLogin yes" | sudo tee -a /etc/ssh/sshd_config
+          echo "PasswordAuthentication yes" | sudo tee -a /etc/ssh/sshd_config
+          sudo service ssh restart
+          
+      - name: Show Public IP (For SSH Access)
+        run: curl ifconfig.me
+        
       - name: Start VPS in Background
         run: |
           screen -dmS vps bash -c 'while true; do echo "VPS Running..."; sleep 3600; done'
